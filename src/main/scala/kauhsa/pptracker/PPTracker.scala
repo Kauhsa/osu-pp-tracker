@@ -28,8 +28,6 @@ class OsuUpdater(apiKey: String, userName: String, updateIntervalSeconds: Int)(i
       val ppDiff = newUserResult.pp - oldUserResult.pp
       val playsDiff = newUserResult.plays - oldUserResult.plays
       println(s"Playcount: $playsDiff, PP: $ppDiff, Rank: $rankDiff")
-    } else {
-      println("no diff")
     }
   }
   
