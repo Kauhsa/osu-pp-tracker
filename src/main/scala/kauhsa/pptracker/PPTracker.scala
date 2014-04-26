@@ -9,42 +9,45 @@ import org.json4s._
 import org.json4s.native.JsonMethods._
 import org.json4s.JsonDSL._
 import scala.util.{ Failure, Success }
+import osu._
+import net.ceedubs.ficus.FicusConfig._
+import com.typesafe.config.ConfigFactory
+import scala.concurrent.ExecutionContext
+import java.io.File
 
-object PPTracker extends App {
-  val UpdateIntervalMilliseconds = 1000 * 30
-  implicit val formats = DefaultFormats
+class OsuUpdater(apiKey: String, userName: String, updateIntervalSeconds: Int)(implicit ec: ExecutionContext, formats: Formats) {
+  private val api = new OsuAPI(apiKey)
   
-  val key = Source.fromFile("api_key.txt").mkString.trim
-  val osu = new OsuAPI(key)
+  private def getNewResult = {
+    Await.result(api.getUser(userName), 5.seconds)
+  }
   
-  def loop() = {
-    var oldResult: Option[UserResult] = None
-    
-    while (true) {
-      val result = Await.result(osu.getUser("Kauhsa"), 5.seconds)
-      
-      oldResult match {
-        case Some(r) => {
-          if (result != r) {
-            println("change")
-            val rankDiff = result.rank - r.rank
-            val ppDiff = result.pp - r.pp
-            val playsDiff = result.plays - r.plays
-            println(s"Playcount: $playsDiff, PP: $ppDiff, Rank: $rankDiff")
-          } else {
-            println("no change")
-          }
-        }
-        
-        case None => {
-          println("huh")
-        }
-      }
-            
-      oldResult = Some(result)
-      Thread.sleep(UpdateIntervalMilliseconds)
+  private def singleDiff(oldUserResult: UserResult, newUserResult: UserResult) = {
+    if (newUserResult != oldUserResult) {
+      val rankDiff = newUserResult.rank - oldUserResult.rank
+      val ppDiff = newUserResult.pp - oldUserResult.pp
+      val playsDiff = newUserResult.plays - oldUserResult.plays
+      println(s"Playcount: $playsDiff, PP: $ppDiff, Rank: $rankDiff")
+    } else {
+      println("no diff")
     }
   }
   
-  loop()  
+  def runForever = {
+    Iterator.continually { Thread.sleep(updateIntervalSeconds * 1000); getNewResult }
+            .sliding(2)
+            .foreach { n => singleDiff(n(0), n(1)) }
+  }  
+}
+
+object PPTracker extends App {
+  implicit val formats = DefaultFormats
+  
+  val config = ConfigFactory.parseFile(new File("pptracker.conf"))
+  val apiKey = config.as[String]("apiKey")
+  val userName = config.as[String]("userName")
+  val updateIntervalSeconds = config.as[Int]("updateIntervalSeconds")
+  
+  val osuUpdater = new OsuUpdater(apiKey, userName, updateIntervalSeconds)
+  osuUpdater.runForever
 }

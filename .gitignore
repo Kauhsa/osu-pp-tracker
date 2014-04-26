@@ -6,6 +6,7 @@
 .project
 
 # sbt specific
+.cache
 .cache/
 .history/
 .lib/
@@ -21,6 +22,4 @@ project/plugins/project/
 .worksheet
 
 # API key
-api_key.txt
-
-.cache
+pptracker.conf
