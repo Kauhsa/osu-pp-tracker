@@ -19,3 +19,8 @@ project/plugins/project/
 # Scala-IDE specific
 .scala_dependencies
 .worksheet
+
+# API key
+api_key.txt
+
+.cache
