@@ -1,4 +1,4 @@
-package osu
+package kauhsa.pptracker.osu
 
 case class UserResult(user_id: String, username: String, playcount: String, pp_rank: String, pp_raw: String) {
   def plays: Int = playcount.toInt

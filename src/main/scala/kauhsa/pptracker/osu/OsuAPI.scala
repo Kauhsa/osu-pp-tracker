@@ -1,4 +1,4 @@
-package osu
+package kauhsa.pptracker.osu
 
 import dispatch._
 import org.json4s._

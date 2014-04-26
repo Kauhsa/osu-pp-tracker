@@ -23,7 +23,7 @@ class OsuUpdater(apiKey: String, userName: String, updateIntervalSeconds: Int)(i
   }
   
   private def singleDiff(oldUserResult: UserResult, newUserResult: UserResult) = {
-    if (newUserResult != oldUserResult) {
+    if (newUserResult != oldUserResult) {      
       val rankDiff = newUserResult.rank - oldUserResult.rank
       val ppDiff = newUserResult.pp - oldUserResult.pp
       val playsDiff = newUserResult.plays - oldUserResult.plays
