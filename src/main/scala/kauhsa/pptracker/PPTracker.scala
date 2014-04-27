@@ -14,6 +14,9 @@ import net.ceedubs.ficus.FicusConfig._
 import com.typesafe.config.ConfigFactory
 import scala.concurrent.ExecutionContext
 import java.io.File
+import java.util.Date
+import scala.Console._
+import java.text.SimpleDateFormat
 
 class OsuUpdater(apiKey: String, userName: String, updateIntervalSeconds: Int)(implicit ec: ExecutionContext, formats: Formats) {
   private val api = new OsuAPI(apiKey)
@@ -23,11 +26,13 @@ class OsuUpdater(apiKey: String, userName: String, updateIntervalSeconds: Int)(i
   }
   
   private def singleDiff(oldUserResult: UserResult, newUserResult: UserResult) = {
-    if (newUserResult != oldUserResult) {      
-      val rankDiff = newUserResult.rank - oldUserResult.rank
-      val ppDiff = newUserResult.pp - oldUserResult.pp
-      val playsDiff = newUserResult.plays - oldUserResult.plays
-      println(s"Playcount: $playsDiff, PP: $ppDiff, Rank: $rankDiff")
+    val rankDiff = -(newUserResult.rank - oldUserResult.rank)
+    val ppDiff = newUserResult.pp - oldUserResult.pp
+
+    if (rankDiff != 0 && ppDiff != 0) {
+      val dateFormat = new SimpleDateFormat("HH:mm:ss")
+      val time = dateFormat.format(new Date())
+      println(f"$BOLD$BLACK[$time]$WHITE PP: $ppDiff%+2.2f $BLACK|$WHITE Rank: $rankDiff%+d$RESET")
     }
   }
   
