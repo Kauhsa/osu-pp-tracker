@@ -1,22 +1,29 @@
 package kauhsa.pptracker
 
-import io._
-import dispatch._
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Await
-import scala.concurrent.duration._
-import org.json4s._
-import org.json4s.native.JsonMethods._
-import org.json4s.JsonDSL._
-import scala.util.{ Failure, Success }
-import osu._
-import net.ceedubs.ficus.FicusConfig._
-import com.typesafe.config.ConfigFactory
-import scala.concurrent.ExecutionContext
 import java.io.File
-import java.util.Date
-import scala.Console._
 import java.text.SimpleDateFormat
+import java.util.Date
+
+import scala.Console.BLACK
+import scala.Console.BOLD
+import scala.Console.RESET
+import scala.Console.WHITE
+import scala.Console.println
+import scala.concurrent.Await
+import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.DurationInt
+
+import org.json4s.DefaultFormats
+import org.json4s.Formats
+
+import com.typesafe.config.ConfigFactory
+
+import net.ceedubs.ficus.FicusConfig.intValueReader
+import net.ceedubs.ficus.FicusConfig.stringValueReader
+import net.ceedubs.ficus.FicusConfig.toFicusConfig
+import osu.OsuAPI
+import osu.UserResult
 
 class OsuUpdater(apiKey: String, userName: String, updateIntervalSeconds: Int)(implicit ec: ExecutionContext, formats: Formats) {
   private val api = new OsuAPI(apiKey)

@@ -1,8 +1,14 @@
 package kauhsa.pptracker.osu
 
-import dispatch._
-import org.json4s._
 import scala.concurrent.ExecutionContext
+
+import org.json4s.Formats
+import org.json4s.jvalue2extractable
+
+import dispatch.Http
+import dispatch.as
+import dispatch.host
+import dispatch.implyRequestHandlerTuple
 
 class OsuAPI(APIKey: String)(implicit ec: ExecutionContext, formats: Formats) {
   val APIHost = host("osu.ppy.sh") / "api" secure
